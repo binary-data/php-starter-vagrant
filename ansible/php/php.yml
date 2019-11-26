@@ -1,0 +1,72 @@
+---
+- hosts: all
+  tasks:
+    - name: install php cli and fpm
+      become: yes
+      apt:
+        name:
+        - php7.3-common
+        - php7.3-cli
+        - php7.3-fpm
+        - php7.3-dev
+        - pkg-php-tools
+
+    - name: install php extensions
+      become: yes
+      apt:
+        name:
+        - php7.3-amqp
+        - php7.3-apcu
+        - php7.3-bcmath
+        - php7.3-mysql
+        - php7.3-pgsql
+        - php7.3-readline
+        - php7.3-redis
+        - php7.3-xml
+        - php7.3-zip
+        - php7.3-curl
+        - php7.3-json
+        - php7.3-mbstring
+        - php7.3-opcache
+
+    - name: install mongodb php extension
+      become: yes
+      # not idempotent but at least works
+      command: pecl install -f mongodb
+
+    - name: create mongodb config file
+      become: yes
+      copy:
+        dest: /etc/php/7.3/mods-available/mongodb.ini
+        content: |
+          extension=mongodb.so
+
+    - name: enable mongodb extension for fpm
+      become: yes
+      file:
+        src: /etc/php/7.3/mods-available/mongodb.ini
+        dest: /etc/php/7.3/fpm/conf.d/20-mongodb.ini
+        state: link
+
+    - name: enable mongodb extension for cli
+      become: yes
+      file:
+        src: /etc/php/7.3/mods-available/mongodb.ini
+        dest: /etc/php/7.3/cli/conf.d/20-mongodb.ini
+        state: link
+
+    - name: restart php-fpm
+      become: yes
+      service:
+        name: php7.3-fpm
+        state: restarted
+
+    - name: copy composer install script
+      become: yes
+      copy:
+        src: composer.sh
+        dest: /tmp/composer.sh
+
+    - name: install composer
+      become: yes
+      command: /bin/sh /tmp/composer.sh

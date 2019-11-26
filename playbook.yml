@@ -1,0 +1,11 @@
+---
+- hosts: all
+  tasks:
+    - name: apt upgrade
+      become: yes
+      apt:
+        upgrade: safe
+
+- import_playbook: ansible/nginx/nginx.yml
+- import_playbook: ansible/dev-packages.yml
+- import_playbook: ansible/php/php.yml

@@ -1,0 +1,29 @@
+---
+- hosts: all
+  tasks:
+    - name: install nginx
+      become: yes
+      apt:
+        name: nginx
+
+    - name: copy nginx base config
+      become: yes
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        group: root
+
+    - name: copy nginx virtualhost config
+      become: yes
+      copy:
+        src: project.conf
+        dest: /etc/nginx/conf.d/project.conf
+        owner: root
+        group: root
+
+    - name: restart nginx
+      become: yes
+      service:
+        name: nginx
+        state: restarted

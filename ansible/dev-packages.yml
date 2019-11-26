@@ -1,0 +1,10 @@
+---
+- hosts: all
+  tasks:
+    - name: install various packages for development
+      become: yes
+      apt:
+        name:
+        - git
+        - unzip
+        - curl
