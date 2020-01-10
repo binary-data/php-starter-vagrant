@@ -29,31 +29,17 @@
         - php7.3-mbstring
         - php7.3-opcache
 
-    - name: install mongodb php extension
+    - name: install php-ast extension
       become: yes
-      # not idempotent but at least works
-      command: pecl install -f mongodb
+      pear:
+        name: pecl/ast
+        state: latest
 
-    - name: create mongodb config file
+    - name: install php-mongodb extension
       become: yes
-      copy:
-        dest: /etc/php/7.3/mods-available/mongodb.ini
-        content: |
-          extension=mongodb.so
-
-    - name: enable mongodb extension for fpm
-      become: yes
-      file:
-        src: /etc/php/7.3/mods-available/mongodb.ini
-        dest: /etc/php/7.3/fpm/conf.d/20-mongodb.ini
-        state: link
-
-    - name: enable mongodb extension for cli
-      become: yes
-      file:
-        src: /etc/php/7.3/mods-available/mongodb.ini
-        dest: /etc/php/7.3/cli/conf.d/20-mongodb.ini
-        state: link
+      pear:
+        name: pecl/mongodb
+        state: latest
 
     - name: restart php-fpm
       become: yes
